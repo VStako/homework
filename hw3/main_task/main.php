@@ -2,6 +2,7 @@
 /**
  * @var bool $form_was_send: form for send...
  * @var array $errors: Errors
+ * @var array $comments: Comments
  */
 ?>
 <!DOCTYPE html>
@@ -14,6 +15,13 @@
 </head>
 <body>
     <div class="container">
+        <?php if($errors):?>
+            <div class="alert alert-danger" role="alert">
+                <?php for($i=0; $i < count($errors); $i++):?>
+                    <?=$errors[$i];?><br>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
         <form action="index.php" method="post">
             <div class="form-group">
                 <label for="nick_name">Nick name: </label>
@@ -30,12 +38,26 @@
                 </div>
             </div>
         </form>
-        <?php if($errors):?>
-        <div class="alert alert-danger" role="alert">
-            <?php for($i=0; $i < count($errors); $i++):?>
-                <?=$errors[$i];?><br>
-            <?php endfor; ?>
-        </div>
+        <?php if($count_comments):?>
+            <div>
+                Count: <?=$count_comments;?>
+            </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <td>Nick name</td>
+                    <td>Comment</td>
+                </tr>
+            </thead>
+            <tbody>
+            <?php for($i=0; $i < $count_comments; $i++):?>
+                    <tr>
+                        <td><?=$comments[$i]['user_name'];?></td>
+                        <td><?=$comments[$i]['comment'];?></td>
+                    </tr>
+                <?php endfor; ?>
+            </tbody>
+        </table>
         <?php endif; ?>
     </div>
 
