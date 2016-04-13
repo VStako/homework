@@ -1,3 +1,9 @@
+<?php
+/**
+ * @var bool $form_was_send: form for send...
+ * @var array $errors: Errors
+ */
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label for="comment"> Password </label>
-                <textarea type="password" class="form-control" id="comment" name="comment" required></textarea>
+                <textarea class="form-control" id="comment" name="comment" required></textarea>
             </div>
             <div>
                 <button type="submit" name="submit" class="btn btn-default">Submit</button>
@@ -24,6 +30,13 @@
                 </div>
             </div>
         </form>
+        <?php if($errors):?>
+        <div class="alert alert-danger" role="alert">
+            <?php for($i=0; $i < count($errors); $i++):?>
+                <?=$errors[$i];?><br>
+            <?php endfor; ?>
+        </div>
+        <?php endif; ?>
     </div>
 
 </body>
