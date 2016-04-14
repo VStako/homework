@@ -15,6 +15,9 @@
 </head>
 <body>
     <div class="container">
+        <pre>
+            <?php print_r($_FILES); ?>
+        </pre>
         <?php if($errors):?>
             <div class="alert alert-danger" role="alert">
                 <?php for($i=0; $i < count($errors); $i++):?>
@@ -22,7 +25,7 @@
                 <?php endfor; ?>
             </div>
         <?php endif; ?>
-        <form action="index.php" method="post">
+        <form action="index.php" method="post" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="nick_name">Nick name: </label>
                 <input type="text" class="form-control" name="nick_name" id="nick_name" required>
@@ -30,6 +33,11 @@
             <div class="form-group">
                 <label for="comment"> Password </label>
                 <textarea class="form-control" id="comment" name="comment" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="exampleInputFile">File input</label>
+                <input type="file" id="photo" name = "photo">
+                <p class="help-block">Example block-level help text here.</p>
             </div>
             <div>
                 <button type="submit" name="submit" class="btn btn-default">Submit</button>
