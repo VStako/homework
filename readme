@@ -1,0 +1,214 @@
+<?php
+define('IMAGES_PATH', 'images');
+define('FILE_COMMENTS_NAME', 'comments.txt');
+
+$ALLOWS_IMAGES_TYPE = [
+    'image/jpeg' => 'jpg',
+    'image/png' => 'png',
+];
+
+$form_was_send = false;
+$comments = [];
+$count_comments = 0;
+
+function save_comments($comments_data) {
+    return file_put_contents(
+        FILE_COMMENTS_NAME,
+        serialize($comments_data)
+    );
+}
+
+function get_comments() {
+    return unserialize(
+        file_get_contents(
+            FILE_COMMENTS_NAME
+        )
+    );
+}
+
+function generate_image_name($image_path) {
+    global $ALLOWS_IMAGES_TYPE;
+
+    $content_type = mime_content_type($image_path);
+    if (!isset($ALLOWS_IMAGES_TYPE[$content_type])) {
+        throw new Error(
+            'Not allowed file type'
+        );
+    }
+    return md5(
+        $image_path.time()
+    ).'.'.$ALLOWS_IMAGES_TYPE[$content_type];
+}
+
+/**
+ * @param $tmp_name
+ * @param $new_image_name
+ * @throws Error: Not allowed file type
+ * @return bool
+ */
+function save_image($tmp_name, $new_image_name) {
+
+    return move_uploaded_file(
+        $tmp_name,
+        IMAGES_PATH.DIRECTORY_SEPARATOR
+        .$new_image_name
+    );
+}
+
+function index() {
+    global $form_was_send;
+    global $comments;
+    global $count_comments;
+
+    if (is_dir(IMAGES_PATH) === false){
+        if (mkdir(IMAGES_PATH) === false) {
+            throw new Error(
+                'Error creating images dir'
+            );
+        }
+    }
+
+    if (file_exists(FILE_COMMENTS_NAME)) {
+        $comments = get_comments();
+        if (!is_array($comments)) {
+            throw new Error(
+                'Comments is not Array data type'
+            );
+        }
+    }
+    
+    if (isset($_POST['submit'])) {
+        $form_was_send = true;
+        if (!isset($_POST['nick_name'])
+            || !isset($_POST['comment'])) {
+            throw new Exception(
+                'nick_name and comment need transfer'
+            );
+        }
+        $tmp_name = $_FILES["photo"]["tmp_name"];
+        if (!$tmp_name) {
+            throw new Exception(
+                'File was not saved'
+            );
+        }
+        // new image name
+        $new_image_name = generate_image_name(
+            $tmp_name
+        );
+        $comment_data = [
+            'user_name' => $_POST['nick_name'],
+            'comment' => $_POST['comment'],
+            'photo' => $new_image_name,
+        ];
+        // push new comment
+        $comments[] = $comment_data;
+        if (($is_save = save_comments($comments) !== false)) {
+            // If not errors
+            // Saving images on the server
+            if (($is_save_img = save_image(
+                    $tmp_name,
+                    $new_image_name
+                )) === false) {
+                throw new Error(
+                    'Error image saving'
+                );
+            }
+        } else {
+            // if error
+            throw new Error(
+                'Comments was not saved!'
+            );
+        }
+    }
+    $count_comments = count($comments);
+}
+
+$errors = [];
+try {
+    index();
+} catch (Exception $e) {
+    $errors[] = $e;
+} catch (Error $e) {
+    $errors[] = $e;
+}
+
+include "main.php";
+
+
+
+
+
+<?php
+/**
+ * @var bool $form_was_send: If form was ...
+ * @var array $errors: Errors
+ * @var array $comments: Comments
+ */
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+        <pre>
+            <?php print_r($_FILES); ?>
+        </pre>
+        <?php if ($errors):?>
+            <div class="alert alert-danger" role="alert">
+                <?php for ($i = 0; $i < count($errors); $i++): ?>
+                    <?=$errors[$i];?><br>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
+        <form action="index.php" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="nick_name">Nick name</label>
+                <input type="text" class="form-control" name="nick_name" id="nick_name" required>
+            </div>
+            <div class="form-group">
+                <label for="comment">Password</label>
+                <textarea class="form-control" id="comment" name="comment" required></textarea>
+            </div>
+            <div class="form-group">
+                <label for="photo">File input</label>
+                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+                <input type="file" id="photo" name="photo">
+            </div>
+            <div class="form-group">
+                <button type="submit" name="submit" class="btn btn-default">Submit</button>
+                <div><?=$form_was_send ? 'Form was send' : '';?></div>
+            </div>
+        </form>
+        <?php if ($count_comments):?>
+            <div>Count comments:<?=$count_comments;?></div>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <td>Nick name</td>
+                        <td>Comment</td>
+                        <td>Image</td>
+                    </tr>
+                </thead>
+                <tbody>
+                <?php for ($i = 0; $i < $count_comments; $i++):
+                    $comment = $comments[$i];
+                ?>
+                    <tr>
+                        <td><?=$comment['user_name'];?></td>
+                        <td><?=$comment['comment'];?></td>
+                        <td>
+                            <img src="<?=IMAGES_PATH.DIRECTORY_SEPARATOR.$comment['photo'];?>">
+                        </td>
+                    </tr>
+                <?php endfor; ?>
+                </tbody>
+            </table>
+        <?php endif; ?>
+    </div>
+</body>
+</html>
