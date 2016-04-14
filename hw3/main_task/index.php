@@ -6,6 +6,7 @@ $ALLOWS_IMAGES_TYPE = [
     'image/jpeg' => 'jpg',
     'image/png' => 'png'
 ];
+
 $form_was_send = false;
 $comments = [];
 $count_comments = 0;
@@ -20,7 +21,34 @@ function save_comments($comments_data){
 function get_comments(){
     return unserialize(
         file_get_contents(
-            FILE_COMMENTS_NAME)
+            FILE_COMMENTS_NAME
+        )
+    );
+}
+
+function generate_image_name($image_path){
+    global $ALLOWS_IMAGES_TYPE;
+
+    $content_type = mime_content_type($image_path);
+    if (!isset($ALLOWS_IMAGES_TYPE[$content_type])) {
+//    if (!$ALLOWS_IMAGES_TYPE[$content_type]?? 0){
+        throw new Error(
+            'Not allowed file type'
+        );
+    }
+    return md5($image_path.time()).'.'.$ALLOWS_IMAGES_TYPE[$content_type];
+}
+
+/**
+ * @param $tmp_name
+ * @param $new_image_name
+ * @throw Error: Not allowed file type
+ * @return bool
+ */
+function save_image($tmp_name, $new_image_name){
+    return move_uploaded_file(
+        $tmp_name,
+        IMAGES_PATH.DIRECTORY_SEPARATOR.$new_image_name
     );
 }
 
@@ -28,11 +56,10 @@ function index(){
     global $form_was_send;
     global $comments;
     global $count_comments;
-    global $ALLOWS_IMAGES_TYPE;
 
     if(is_dir(IMAGES_PATH) == false){
         if(mkdir(IMAGES_PATH) === false){
-            throw new Exception('Error creating images dir.');
+            throw new Error('Error creating images dir.');
         }
     }
 
@@ -40,7 +67,7 @@ function index(){
     if(file_exists(FILE_COMMENTS_NAME)){
         $comments = get_comments();
         if(!is_array($comments)){
-            throw new Exception('Comments id not Array!');
+            throw new Error('Comments id not Array!');
         }
     }
 
@@ -51,27 +78,24 @@ function index(){
             throw new Exception('nick_name and comment need transfer');
         }
 
+        $tmp_name = $_FILES["photo"]["tmp_name"];
+        if($tmp_name){
+            throw new Exception('File was not saved');
+        }
+
+        $new_image_name = generate_image_name($tmp_name);
+
         $comment_data = [
             'user_name' => $_POST['nick_name'],
             'comment' => $_POST['comment'],
+            'photo' => $new_image_name,
         ];
 
         $comments[] = $comment_data;
         if (($is_save = save_comments($comments) !== false)){
-            //if no errors
-            $tmp_name = $_FILES["photo"]["tmp_name"];
-            $name = $_FILES["photo"]["name"];
-            $content_type = mime_content_type($tmp_name);
-            var_dump($content_type);
-            $allow_type = $ALLOWS_IMAGES_TYPE[$content_type];
-            var_dump($allow_type);
-
-            if (!isset($allow_type)){
-                throw new Exception(
-                    'Not allowed file type'
-                );
+            if(($is_save_img = save_image($tmp_name, $new_image_name)) === false){
+                throw new Error('Error image saving');
             }
-            move_uploaded_file($tmp_name, IMAGES_PATH.DIRECTORY_SEPARATOR.md5($name.time()).'.'.$allow_type);
         } else{
             throw new Error('comments was not saved! ');
         }
@@ -85,5 +109,8 @@ try{
     index();
 }catch(Exception $e){
     $errors[]=$e;
+}catch (Error $e) {
+    $errors[] = $e;
 }
+
 include "main.php";

@@ -36,6 +36,7 @@
             </div>
             <div class="form-group">
                 <label for="exampleInputFile">File input</label>
+                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
                 <input type="file" id="photo" name = "photo">
                 <p class="help-block">Example block-level help text here.</p>
             </div>
@@ -55,19 +56,23 @@
                 <tr>
                     <td>Nick name</td>
                     <td>Comment</td>
+                    <td>Image</td>
                 </tr>
             </thead>
             <tbody>
-            <?php for($i=0; $i < $count_comments; $i++):?>
+            <?php for($i=0; $i < $count_comments; $i++):
+                $comment = $comments[$i];?>
                     <tr>
                         <td><?=$comments[$i]['user_name'];?></td>
                         <td><?=$comments[$i]['comment'];?></td>
+                        <td>
+                            <img src="<?=IMAGES_PATH.DIRECTORY_SEPARATOR.$comments[$i]['photo'];?>">
+                        </td>
                     </tr>
                 <?php endfor; ?>
             </tbody>
         </table>
         <?php endif; ?>
     </div>
-
 </body>
 </html>
