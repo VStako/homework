@@ -35,8 +35,8 @@
                 <textarea class="form-control" id="comment" name="comment" required></textarea>
             </div>
             <div class="form-group">
-                <label for="exampleInputFile">File input</label>
-                <input type="hidden" name="MAX_FILE_SIZE" value="100000" />
+                <label for="photo">File input</label>
+                <input type="hidden" name="MAX_FILE_SIZE" value="1000000" />
                 <input type="file" id="photo" name = "photo">
                 <p class="help-block">Example block-level help text here.</p>
             </div>
