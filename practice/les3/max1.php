@@ -7,7 +7,6 @@
     </form>
     <pre>
         <?php
-        //01.25.00 max2
         error_reporting(E_ALL);
         if(isset($_POST['submit'])) {
 //            print_r($_POST);

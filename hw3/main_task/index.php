@@ -8,7 +8,7 @@ $ALLOWS_IMAGES_TYPE = [
 ];
 
 $form_was_send = false;
-$images_limit = 7;
+$images_limit = 0;
 
 function generate_image_name($image_path) {
     global $ALLOWS_IMAGES_TYPE;
@@ -38,9 +38,21 @@ function index()
     global $form_was_send;
     global $images_limit;
 
-    --$images_limit;
+    //content
+    echo '<pre>';
+    var_dump(count(scandir("uploads/"))-2);
+//    print_r($_FILES);
+    foreach (scandir("uploads/") as $filename){
+        if(($filename != '.') AND($filename != '..')){
+            echo "$filename";
+            echo "<br>";
+        }
+    }
+    echo '</pre>';
 
-    if ($images_limit >= 0) {
+    //logic
+    if (count(scandir("uploads/")) - 2 < 7) {
+        $images_limit = 7 + 2 - count(scandir("uploads/"));
 
         if (is_dir(IMAGES_PATH) === false) {
             if (mkdir(IMAGES_PATH) === false) {
@@ -53,9 +65,9 @@ function index()
         if (isset($_POST['submit'])) {
             $form_was_send = true;
 
-            echo "<pre>";
-            print_r($_POST);
-            echo "</pre>";
+//            echo "<pre>";
+//            print_r($_POST);
+//            echo "</pre>";
 
             $tmp_name = $_FILES["photo"]["tmp_name"];
 

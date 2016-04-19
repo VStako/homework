@@ -20,7 +20,7 @@
             <div>
                 <button type="submit" name="submit" class="btn btn-default">Submit</button>
                 <div>
-                    <?= $form_was_send ? 'Form was send' : ''; ?>
+                    <?= $form_was_send ? "Your images limit = $images_limit" : ''; ?>
                 </div>
             </div>
         </form>
@@ -28,31 +28,6 @@
 </body>
 </html>
 
-
-
-
-<!--        <form action="index.php" method="post" enctype="multipart/form-data">-->
-<!--            <div class="form-group">-->
-<!--                <label for="nick_name">Nick name: </label>-->
-<!--                <input type="text" class="form-control" name="nick_name" id="nick_name" required>-->
-<!--            </div>-->
-<!--            <div class="form-group">-->
-<!--                <label for="comment"> Password </label>-->
-<!--                <textarea class="form-control" id="comment" name="comment" required></textarea>-->
-<!--            </div>-->
-<!--            <div class="form-group">-->
-<!--                <label for="photo">File input</label>-->
-<!--                <input type="hidden" name="MAX_FILE_SIZE" value="1000000" />-->
-<!--                <input type="file" id="photo" name = "photo">-->
-<!--                <p class="help-block">Example block-level help text here.</p>-->
-<!--            </div>-->
-<!--            <div>-->
-<!--                <button type="submit" name="submit" class="btn btn-default">Submit</button>-->
-<!--                <div>-->
-<!--                    --><?//=$form_was_send ? 'Form was send' : '';?>
-<!--                </div>-->
-<!--            </div>-->
-<!--        </form>-->
 
 
 
