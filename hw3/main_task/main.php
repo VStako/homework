@@ -11,19 +11,45 @@
 </head>
 <body>
     <div class="container">
+        <?php if ($errors): ?>
+            <div class="alert alert-danger" role="alert">
+                <?php for ($i = 0; $i < count($errors); $i++): ?>
+                    <?= $errors[$i]; ?><br>
+                <?php endfor; ?>
+            </div>
+        <?php endif; ?>
         <form action="index.php" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="comments">Comments:</label>
+                <textarea class="form-control" rows="2" cols="10" name="comments" required></textarea>
+            </div>
             <div class="form-group">
                 <label for="photo">File input</label>
                 <input type="hidden" name="MAX_FILE_SIZE" value="3145728"/>
                 <input type="file" id="photo" name="photo">
             </div>
             <div>
-                <button type="submit" name="submit" class="btn btn-default">Submit</button>
+                <button type="submit" name="submit" class="btn btn-default" >Submit</button>
                 <div>
                     <?= $form_was_send ? "Your images limit = $images_limit" : ''; ?>
                 </div>
             </div>
         </form>
+        <table class="table table-striped">
+            <?php $dir = scandir("uploads/");
+            if (count(scandir("uploads/")) > 2):?>
+            <?php for($i =0; $i < count($dir); $i++):
+                if(($dir[$i] != '.') AND ($dir[$i] != '..')) :?>
+            <tr>
+                <td><?php echo $comments[$i-2]["comments"]; ?></td>
+                <td>
+                    <?php echo "<img style='height:150px;float:left;' src=http://homework/hw3/main_task/uploads/$dir[$i]>";?>
+                </td>
+            </tr>
+            <?php endif; ?>
+            <?php endfor; ?>
+            <?php endif; ?>
+        </table>
     </div>
 </body>
 </html>

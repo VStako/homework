@@ -1,5 +1,6 @@
 <?php
 define('IMAGES_PATH', 'uploads');
+define('FILE_COMMENTS_NAME', 'comments.txt');
 
 $ALLOWS_IMAGES_TYPE = [
     'image/jpeg' => 'jpg',
@@ -9,41 +10,42 @@ $ALLOWS_IMAGES_TYPE = [
 
 $form_was_send = false;
 $images_limit = 0;
+$count_comments = 0;
+
+function save_comments($comments_data) {
+    return file_put_contents(FILE_COMMENTS_NAME, serialize($comments_data));
+}
+
+function get_comments() {
+    return unserialize(file_get_contents(FILE_COMMENTS_NAME));
+}
 
 function generate_image_name($image_path) {
     global $ALLOWS_IMAGES_TYPE;
 
     $content_type = mime_content_type($image_path);
     if (!isset($ALLOWS_IMAGES_TYPE[$content_type])) {
-        throw new Error(
-            'Not allowed file type'
-        );
+        throw new Error('Not allowed file type');
     }
-    return md5(
-        $image_path . time()
-    ) . '.' . $ALLOWS_IMAGES_TYPE[$content_type];
+
+    return md5( $image_path . time() ) . '.' . $ALLOWS_IMAGES_TYPE[$content_type];
 }
 
-function save_image($tmp_name, $new_image_name)
-{
-    return move_uploaded_file(
-        $tmp_name,
-        IMAGES_PATH . DIRECTORY_SEPARATOR
-        . $new_image_name
-    );
+function save_image($tmp_name, $new_image_name) {
+    return move_uploaded_file($tmp_name, IMAGES_PATH . DIRECTORY_SEPARATOR . $new_image_name);
 }
 
-function index()
-{
+function index() {
     global $form_was_send;
     global $images_limit;
+    global $comments;
 
     //content
     echo '<pre>';
-    var_dump(count(scandir("uploads/"))-2);
+    var_dump(count(scandir("uploads/")) - 2);
 //    print_r($_FILES);
-    foreach (scandir("uploads/") as $filename){
-        if(($filename != '.') AND($filename != '..')){
+    foreach (scandir("uploads/") as $filename) {
+        if (($filename != '.') AND ($filename != '..')) {
             echo "$filename";
             echo "<br>";
         }
@@ -52,50 +54,65 @@ function index()
 
     //logic
     if (count(scandir("uploads/")) - 2 < 7) {
-        $images_limit = 7 + 2 - count(scandir("uploads/"));
+        $images_limit = 9 - count(scandir("uploads/"));
 
         if (is_dir(IMAGES_PATH) === false) {
             if (mkdir(IMAGES_PATH) === false) {
-                throw new Error(
-                    'Error creating images dir.'
-                );
+                throw new Error('Error creating images dir.');
+            }
+        }
+
+        if (file_exists(FILE_COMMENTS_NAME)) {
+            $comments = get_comments();
+            if (!is_array($comments)) {
+                throw new Error('Comments is not Array data type');
             }
         }
 
         if (isset($_POST['submit'])) {
             $form_was_send = true;
 
-//            echo "<pre>";
-//            print_r($_POST);
-//            echo "</pre>";
+            if (!isset($_POST['comments'])) {
+                throw new Exception('Comment need transfer');
+            }
 
             $tmp_name = $_FILES["photo"]["tmp_name"];
 
             if (!$tmp_name) {
-                throw new Exception(
-                    'File was not saved'
-                );
+                throw new Exception('File was not saved');
             }
 
             $new_image_name = generate_image_name($tmp_name);
 
-            if ((save_image($tmp_name, $new_image_name)) === false) {
-                throw new Error('Error image saving');
-            }
+            $comment_data = [
+                'comments' => $_POST['comments'],
+                'photo' => $new_image_name,
+            ];
 
+            $comments[] = $comment_data;
+            var_dump($comments);
+
+            if ((save_comments($comments) !== false)) {
+                if ((save_image($tmp_name, $new_image_name)) === false) {
+                    throw new Error('Error image saving');
+                }
+            } else {
+                throw new Error('Comments was not saved!');
+            }
         }
     }
 }
 
-//
-//$errors = [];
-//try {
-    index();
-//} catch (Exception $e) {
-//    $errors[] = $e;
-//} catch (Error $e) {
-//    $errors[] = $e;
-//}
+
+$errors = [];
+try {
+index();
+} catch (Exception $e) {
+    $errors[] = $e;
+} catch (Error $e) {
+    $errors[] = $e;
+}
+
 include "main.php";
 
 
