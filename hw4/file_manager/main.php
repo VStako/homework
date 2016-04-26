@@ -1,3 +1,8 @@
+<?php
+/**
+ * @var array|null $opened_file: File
+ */
+?>
 <DOCTYPE! html>
 <html lang="en">
 <head>
@@ -17,7 +22,9 @@
                                 <?=$file; ?>
                             </a>
                             <?php else: ?>
-                            <?=$file; ?>
+                            <a href="<?='?open='.$file_info['file_path'];?>">
+                                <?=$file; ?>
+                            </a>
                         <?php endif; ?>
                     </td>
                     <td><?= $file_info['is_dir'] ?  'Dir' : 'File'; ?></td>
@@ -26,6 +33,12 @@
             <?php endforeach; ?>
         </tbody>
     </table>
+    <?php if ($opened_file !== null) : ?>
+        <h3><?= $opened_file['file_name']?></h3>
+    <div>
+        <?= $opened_file['content'];?>
+    </div>
+    <?php endif?>
 </div>
 </body>
 </html>

@@ -13,8 +13,10 @@ function get_files() {
 }
 
 function render(){
+    $opened_file = null;
     if ($_GET) {
         $go_to = isset($_GET['go_to']) ? $_GET['go_to'] : null;
+        $open = isset($_GET['open']) ? $_GET['open'] : null;
 //        $go_to = $_GET['go_to']?? null;
         if ($go_to !== null){
             echo $go_to;
@@ -22,6 +24,14 @@ function render(){
                 chdir($go_to);
             } else {
                 throw new Exception('Is not directory');
+            }
+        } elseif ($open !== null) {
+            if (file_exists($open)){
+                $opened_file = [];
+                $opened_file['file_name'] = basename($open);
+                $opened_file['content'] = htmlspecialchars(file_get_contents($open));
+            } else {
+                throw new Exception('File not exist');
             }
         }
     }
