@@ -1,10 +1,3 @@
-<?php
-/**
- * Created by PhpStorm.
- * User: stako
- * Date: 25.04.2016
- * Time: 16:27
- */?>
 <DOCTYPE! html>
 <html lang="en">
 <head>
@@ -20,12 +13,12 @@
                 <tr>
                     <td>
                         <?php if ($file_info['is_dir']): ?>
-                            <a href="<?='?go_to='.$file;?>">
+                            <a href="<?='?go_to='.$file_info['file_path'];?>">
                                 <?=$file; ?>
                             </a>
-<!--                            --><?php //else: ?>
+                            <?php else: ?>
                             <?=$file; ?>
-                        <?php endif;                        ?>
+                        <?php endif; ?>
                     </td>
                     <td><?= $file_info['is_dir'] ?  'Dir' : 'File'; ?></td>
                     <td><?= $file_info['file_size']; ?></td>
