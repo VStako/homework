@@ -1,8 +1,35 @@
 <?php
 session_start();
 
-function registration_user(){
-    return null;
+function validation_registration_user($form_fields){
+    if (
+        !isset($form_fields['login']) or
+        !isset($form_fields['password']) or
+        !isset($form_fields['password2']) or
+        empty($form_fields['login']) or
+        empty($form_fields['password']) or
+        ($form_fields['password'] != $form_fields['password2'])
+        )
+    {
+        return false;
+    }
+    return true;
+}
+
+define('USER_DATA_FILE', 'users.data');
+function registration_user($user){
+    $users = null;
+    if (!file_exists(USER_DATA_FILE)){
+        file_put_contents(USER_DATA_FILE, serialize([$user]));
+    } else {
+        $data = file_get_contents(USER_DATA_FILE);
+        $users = unserialize($data);
+        if ($users === false){
+            throw new Exception();
+        }
+        $users[] = $user;
+        file_put_contents(USER_DATA_FILE, serialize($users));
+    }
 }
 
 function get_user(){
@@ -16,8 +43,16 @@ function render()
         $current_user = get_user();
         if ($current_user === null) {
             if (isset($_POST['submit'])) {
-                if (registration_user()) {
-                    throw new Exception('User didnt register');
+                if (validation_registration_user($_POST) === false) {
+                    throw new Exception('Fields error!');
+                }
+                $user = [
+                    'login' => $_POST['login'],
+                    'password' => $_POST['password'],
+                    'password2' => $_POST['password2'],
+                ];
+                if (registration_user($user) == false){
+                    throw new Exception();
                 }
             }
         }
@@ -30,4 +65,4 @@ function render()
 
 render();
 
-//02.42.23
+//03.05.00
