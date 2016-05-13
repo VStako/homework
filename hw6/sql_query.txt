@@ -1,0 +1,28 @@
+for WINDOWS cmd:
+CREATE DATABASE test_db;
+SHOW DATABASES;
+USE test_db;
+CREATE [TEMPORARY] TABLE car (
+    -> INT(11) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    -> name VARCHAR(50) NOT NULL,
+    -> number CHAR(10) NOT NULL,
+    -> color TINYINT(2) NOT NULL);
+SHOW TABLES;
+INSERT INTO car(id, name, numb, color)VALUES(3, "Ford", "JK-8898", 3);
+INSERT INTO car(name, numb, color)VALUES("Audi", "YR-2501", 2);
+INSERT INTO car(name, numb, color)VALUES("Reno", "GH-7169", 3);
+SELECT id, name FROM car;
+SELECT LENGTH(number) FROM car;
+SELECT COUNT(*) FROM car;
+SELECT * FROM car WHERE id=4;
+SELECT * FROM car WHERE name LIKE "_ud%";
+UPDATE car SET color=1;
+UPDATE car SET color=2 WHERE id=3;
+SELECT c.name AS `name_car` FROM car c;
+DELETE FROM car WHERE id=3;
+ALTER TABLE car ADD COLUMN is_deleted BIT(1);
+ALTER TABLE car ADD MODIFY is_deleted BIT(1) DEFAULT 0 AFTER id;
+UPDATE car SET is_deletes = 1 WHERE id=4;
+SELECT * FROM car WHERE is_deleted <> 1;
+SELECT * FROM car WHERE is_deleted = 1;
+03.22.14

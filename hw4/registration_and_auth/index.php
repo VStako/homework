@@ -23,6 +23,9 @@ function registration_user($user){
         file_put_contents(USER_DATA_FILE, serialize([$user]));
     } else {
         $data = file_get_contents(USER_DATA_FILE);
+        if ($data === false) {
+            throw new Exception();
+        }
         $users = unserialize($data);
         if ($users === false){
             throw new Exception();
@@ -65,4 +68,4 @@ function render()
 
 render();
 
-//03.05.00
+//03.08.00
