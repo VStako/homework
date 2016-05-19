@@ -27,3 +27,7 @@ SELECT * FROM car WHERE is_deleted <> 1;
 SELECT * FROM car WHERE is_deleted = 1;
 03.22.14
 36.10
+01.19.00
+02.28.55
+
+SELECT site_id, user_id, ip, email, login, deposit_summ, balance, balance_orig FROM users ORDER BY balance_orig DESC LIMIT 3, 10;
