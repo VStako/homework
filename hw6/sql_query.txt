@@ -29,5 +29,18 @@ SELECT * FROM car WHERE is_deleted = 1;
 36.10
 01.19.00
 02.28.55
+03.02.46
 
 SELECT site_id, user_id, ip, email, login, deposit_summ, balance, balance_orig FROM users ORDER BY balance_orig DESC LIMIT 3, 10;
+
+Ctujlyzd10,elennfyws!
+E,tq,j,hf44,jnbyrjv!
+
+
+SELECT u.site_id, s.site_name, SUM(balance_orig), SUM(balance), COUNT(user_id),
+	(SELECT game FROM users_activity ua WHERE ua.site_id = u.site_id ORDER BY game LIMIT 1) AS `game`
+FROM users u
+LEFT JOIN sites s ON (u.site_id = s.site_id)
+GROUP BY u.site_id HAVING site_id BETWEEN 10 AND 25
+ORDER BY SUM(balance_orig) DESC
+LIMIT 5
