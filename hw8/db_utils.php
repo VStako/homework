@@ -19,3 +19,4 @@ function db_fetch_data($db_connect, $query, $params)
     mysqli_stmt_free_result($stmt);
     return $result_data;
 }
+
