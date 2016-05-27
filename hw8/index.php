@@ -1,44 +1,1 @@
-<?php
-require_once 'config.php';
-require_once 'exceptions.php';
-require_once 'db_utils.php';
-
-function render_template($name, $data){
-    ob_start();
-    include 'tamplates/'.$name.'.php';
-    return ob_get_clean();
-}
-
-$config = get_config();
-$db_config = $config['db'];
-
-if( !($db_connect = mysqli_connect(
-    $db_config['host'],
-    $db_config['user'],
-    $db_config['password'],
-    $db_config['db_name']
-)) === false){
-    try {
-        throw new DbConnectionError();
-    } catch (DbConnectionError $ex) {
-        echo '!!!';
-    }
-}
-
-function get_users($limit=10){
-    global $db_connect;
-    return db_fetch_data($db_connect, 'SELECT social_id FROM social_nets LIMIT ?', [$limit]);
-}
-
-$users = get_users(5);
-
-echo call_user_func(function() use ($users) {
-    return render_template('main', [
-        'users' => $users
-    ]);
-});
-
-mysqli_close($db_connect);
-
-
-//02.28.40
+<?phprequire_once 'config.php';require_once 'exceptions.php';require_once 'db_utils.php';define('USER_TYPE_EMAIL', 'email');define('USER_TYPE_MERGED_CID', 'merged_cid');define('USER_TYPE_SOCIAL_ID', 'social_id');$USER_TYPES = [    USER_TYPE_EMAIL,    USER_TYPE_MERGED_CID,    USER_TYPE_SOCIAL_ID];/** * Прорисовка темплита по его имени * @param string $name * @param array $data: Данные, *  которые мы будет передавать в наш шаблон * @return string: HTML код */function render_template($name, array $data = []) {    # Начало перехвата буфера, то есть,    # то что мы будет выводить в наш HTML    # будет перехватано    ob_start();    # Подключение нашего шаблона    include_once 'templates/'.$name.'.php';    # Вывод того, что мы перехватили в буфере    return ob_get_clean();}$config = get_config();$db_config = $config['db'];# Подключение к БД используя конфигурациюif (($db_connect = mysqli_connect(        $db_config['host'],        $db_config['user'],        $db_config['password'],        $db_config['db_name']    )) === false) {    # Если ошибка подключения к БД...    throw new DbConnectionError();}/** * Функция для получения списка пользователей * @param string $type: Статус юзера, * @param int $limit: Кол-во юзеров, *  которые мы хотим вывести * @return array: Массив юзеров * @throws Exception: Внутри функции есть генерация ошибки */function get_users(    $type=USER_TYPE_SOCIAL_ID,    $limit=10) {    global $db_connect;    return db_fetch_data(        $db_connect,        'SELECT * FROM users_cid_info WHERE type=? LIMIT ?',        # s, i: Тип данных, limit, ...: Значения        [            's' => $type,            'i' => $limit        ]    );}$current_type = null;if (isset($_GET['user_type'])) {    $current_type = $_GET['user_type'];    if (in_array($current_type, $USER_TYPES)) {        # Список юзеров по выбранному типу        $users = get_users($current_type);    } else {        # Если выбранныый тип не был найден в массиве        # возможных типов юзера        $users = get_users(USER_TYPE_SOCIAL_ID);    }} else {    # Список юзеров, если статус не был выбран    $users = get_users();}echo call_user_func(function() use (    $USER_TYPES,    $users,    $current_type) {    return render_template('main', [        'USER_TYPES' => $USER_TYPES,        'users' => $users,        'current_type' => $current_type,        'render_template' => function($name, $data) {            return call_user_func_array(                'render_template',                [$name, $data]            );        }    ]);});mysqli_close($db_connect);//03.16.29
