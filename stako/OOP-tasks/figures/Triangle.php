@@ -6,12 +6,40 @@
  * Date: 07.06.2016
  * Time: 17:21
  */
+require_once( "FigureInterface.php" );
+
 class Triangle implements FigureInterface
 {
-
     private $a;
     private $b;
     private $c;
+    private $p;
+    private $s;
+    private $name = 'Triangle';
+
+    public function getP()
+    {
+        return $this->p;
+    }
+
+    public function getS()
+    {
+        return $this->s;
+    }
+    public function getName()
+    {
+        return $this->name;;
+    }
+
+    public function setP($p)
+    {
+        $this->p = $p;
+    }
+
+    public function setS($s)
+    {
+        $this->s = $s;
+    }
 
     public function __construct($a, $b, $c)
     {
@@ -22,12 +50,11 @@ class Triangle implements FigureInterface
 
     public function perimeter()
     {
-        return $this->a + $this->b + $this->c;
+        $this->p = $this->a + $this->b + $this->c;
     }
 
     public function square()
     {
-        $p = $this->perimeter();
-        return sqrt($p*($p-$this->a)*($p-$this->b)*($p-$this->c));
+        $this->s = sqrt($this->p*($this->p-$this->a)*($this->p-$this->b)*($this->p-$this->c));
     }
 }

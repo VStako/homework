@@ -49,5 +49,6 @@ if (isset($_POST['submit'])) {
 
     if (($is_save_img = save_image($tmp_name, $new_image_name) === false)) {
         throw new Error('Error image saving');
-    } }
+    }
+}
 include "p6html.php";

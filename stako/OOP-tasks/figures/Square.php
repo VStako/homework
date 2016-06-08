@@ -6,10 +6,39 @@
  * Date: 07.06.2016
  * Time: 17:20
  */
+require_once( "FigureInterface.php" );
+
 class Square implements FigureInterface
 {
 
     private $a;
+    private $p;
+    private $s;
+    private $name = 'Square';
+
+    public function getP()
+    {
+        return $this->p;
+    }
+
+    public function getS()
+    {
+        return $this->s;
+    }
+    public function getName()
+    {
+        return $this->name;;
+    }
+
+    public function setP($p)
+    {
+        $this->p = $p;
+    }
+
+    public function setS($s)
+    {
+        $this->s = $s;
+    }
 
     public function __construct($a)
     {
@@ -18,11 +47,11 @@ class Square implements FigureInterface
 
     public function perimeter()
     {
-        return 4*$this->a;
+        $this->p = 4*$this->a;
     }
 
     public function square()
     {
-        return pow($this->a, 2);
+        $this->s = pow($this->a, 2);
     }
 }

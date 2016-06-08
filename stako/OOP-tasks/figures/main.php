@@ -1,43 +1,46 @@
 <?php
 /**
- * @var array $data: [
- *  $USER_TYPES,
- *  $users,
- *  $current_type
- * ]
+ * @var array $figures: array with figures
  */
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Figures</title>
 </head>
 <body>
-<?=$data['render_template']('filter', [
-    'USER_TYPES' => $data['USER_TYPES'],
-    'current_type' => $data['current_type'],
-]);?>
-<table>
-    <thead>
-    <tr>
-        <th>USER_CID</th>
-        <th>VAL</th>
-    </tr>
-    </thead>
-    <tbody>
-    <?php
-    $count_users = count($data['users']);
-    for ($i = 0; $i < $count_users; $i++):
-        $user = $data['users'][$i];
-        ?>
+    <form action="index.php" method="post">
+        <label for="select">Chose the figure: </label>
+        <select name="select" id="select" required>
+            <option value="1">Circle</option>
+            <option value="2">Square</option>
+            <option value="3">Triangle</option>
+        </select>
+        <label for="side1">Side1</label>
+        <input type="text" name="side1" id="side1" required>
+        <label for="side2">Side2</label>
+        <input type="text" name="side2" id="side2">
+        <label for="side3">Side3</label>
+        <input type="text" name="side3" id="side3">
+        <button type="submit" value="Отправить">КНОПКА</button>
+    </form>
+<!--    <pre>-->
+<!--        --><?php //print_r($figures); ?>
+<!--    </pre>-->
+    <table border="1ps solid black">
         <tr>
-            <td>
-                <?=$user['user_cid'];?>
-            </td>
+            <th width="25%"> Figure </th>
+            <th width="25%"> P </th>
+            <th width="25%"> S </th>
         </tr>
-    <?php endfor;?>
-    </tbody>
-</table>
+        <?php foreach ($figures as $figure) :?>
+        <tr>
+            <td><?= $figure->getName(); ?></td>
+            <td><?= $figure->getP(); ?></td>
+            <td><?= $figure->getS(); ?></td>
+        </tr>
+        <?php endforeach;?>
+    </table>
 </body>
 </html>
