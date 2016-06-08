@@ -16,13 +16,13 @@
             <option value="1">Circle</option>
             <option value="2">Square</option>
             <option value="3">Triangle</option>
-        </select>
+        </select> <br>
         <label for="side1">Side1</label>
-        <input type="text" name="side1" id="side1" required>
+        <input type="text" name="side1" id="side1" required>    <br>
         <label for="side2">Side2</label>
-        <input type="text" name="side2" id="side2">
+        <input type="text" name="side2" id="side2">             <br>
         <label for="side3">Side3</label>
-        <input type="text" name="side3" id="side3">
+        <input type="text" name="side3" id="side3">             <br>
         <button type="submit" value="Отправить">КНОПКА</button>
     </form>
 <!--    <pre>-->
