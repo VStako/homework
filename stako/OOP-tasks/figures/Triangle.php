@@ -55,6 +55,6 @@ class Triangle implements FigureInterface
 
     public function square()
     {
-        $this->s = sqrt($this->p*($this->p-$this->a)*($this->p-$this->b)*($this->p-$this->c));
+        $this->s = sqrt($this->p/2*($this->p/2-$this->a)*($this->p/2-$this->b)*($this->p/2-$this->c));
     }
 }
